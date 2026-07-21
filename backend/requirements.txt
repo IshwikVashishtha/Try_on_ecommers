@@ -1,8 +1,8 @@
 transformers==4.41.0
 torch
 # For image processing
-Pillow==10.2.0
+Pillow
 # For FastAPI
-fastapi==0.104.1
-uvicorn==0.24.0
-python-multipart==0.0.6
+fastapi
+uvicorn
+python-multipart
