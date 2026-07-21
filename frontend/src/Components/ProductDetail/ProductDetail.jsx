@@ -264,8 +264,9 @@ const ProductDetail = () => {
 
     } catch (err) {
       console.error("Virtual Try-On Failed:", err);
-      // This will now pop up with the EXACT cause of the failure on your screen!
-      alert(`Try-On Failed: ${err.message || "Unknown error occurred"}`);
+      
+      // The user sees a professional, generic message
+      alert("We're sorry, the virtual try-on service is currently experiencing high demand. Please try again later.");
     } finally {
       setTryOnLoading(false);
     }

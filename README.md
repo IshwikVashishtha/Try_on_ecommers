@@ -16,7 +16,7 @@ A modern AI-powered e-commerce platform that combines a responsive shopping expe
 
 # 📖 Overview
 
-TRY_ON Store reimagines online fashion shopping by integrating AI-powered virtual fitting directly into a modern e-commerce experience.
+TRY_ON Store reimagines online TRY_ON shopping by integrating AI-powered virtual fitting directly into a modern e-commerce experience.
 
 The frontend is developed using **React** and **Vite**, providing a fast and responsive interface, while a **FastAPI** backend securely communicates with **Hugging Face's IDM-VTON** model to generate realistic virtual try-on images.
 

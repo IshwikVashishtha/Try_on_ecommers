@@ -143,7 +143,7 @@ const Navbar = () => {
             className="text-[var(--text-primary)] font-[900] uppercase text-[18px] tracking-[0.08em] cursor-pointer whitespace-nowrap"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
-            FASHION STORE
+            TRY_ON STORE
           </Link>
 
           {/* Desktop Nav Links */}
