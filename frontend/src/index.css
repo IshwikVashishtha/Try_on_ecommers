@@ -1,0 +1,221 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap");
+@import "tailwindcss";
+
+:root {
+  /* Soft, warm off-white for a relaxed foundation */
+  --bg-primary: #F7F5F0;     
+  --bg-secondary: #EAE7DF;   
+  --bg-card: #FFFFFF;        
+
+  /* Deep slate/charcoal instead of pure black for readability without the harshness */
+  --text-primary: #2D3734;   
+  --text-secondary: #727C78; 
+  
+  /* Gentle, warm borders */
+  --border-color: #DCD9D1;   
+  
+  --navbar-bg: #F7F5F0;      
+
+  /* Muted sage green for interactive elements */
+  --btn-bg: #84968C;         
+  --btn-text: #FFFFFF;       
+  --btn-hover: #6A7B72;      
+
+  /* Soft clay/terracotta for alerts—noticeable but not aggressive */
+  --sale-bar-bg: #D1A783;    
+  --sale-bar-text: #FFFFFF;  
+  
+  /* Tinted overlay to match the text tone rather than stark black */
+  --overlay: rgba(45, 55, 52, 0.5); 
+}
+
+[data-theme="dark"] {
+  --bg-primary: #1a1e1c;
+  --bg-secondary: #222724;
+  --bg-card: #272c29;
+  --text-primary: #e6e8e6;
+  --text-secondary: #9ca8a2;
+  --border-color: #363d39;
+  --navbar-bg: #1a1e1c;
+  --btn-bg: #84968c;
+  --btn-text: #1a1e1c;
+  --btn-hover: #9bb0a4;
+  --sale-bar-bg: #c29576;
+  --sale-bar-text: #1a1e1c;
+  --overlay: rgba(15, 18, 17, 0.8);
+}
+
+@theme {
+  --color-TRY_ON-white: #ffffff;
+  --color-TRY_ON-black: #000000;
+  --color-TRY_ON-grey: #757575;
+  --color-TRY_ON-border: #e1e1e1;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  font-family: "Inter", sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Base Interactions */
+input,
+button,
+a {
+  transition: all 0.3s ease;
+}
+
+/* Section Header Typography */
+.section-wrapper {
+  padding: 80px 24px;
+}
+@media (min-width: 1024px) {
+  .section-wrapper {
+    padding: 80px 48px;
+  }
+}
+
+.section-heading-container {
+  text-align: center;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.35em;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.section-title {
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: clamp(28px, 4vw, 48px);
+  text-transform: uppercase;
+  color: var(--text-primary);
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+}
+
+.section-underline {
+  width: 40px;
+  height: 2px;
+  background-color: var(--text-primary);
+  margin: 0 auto 48px auto;
+}
+
+/* Shimmer Loading Animations */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 25%,
+    var(--border-color) 50%,
+    var(--bg-secondary) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.marquee-track,
+.animate-marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 35s linear infinite;
+}
+
+/* Custom Fade Transition */
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--btn-bg);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--btn-bg);
+  border-radius: 0;
+  cursor: pointer;
+  border: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block !important;
+  }
+
+  .nav-links {
+    display: none !important;
+  }
+}
