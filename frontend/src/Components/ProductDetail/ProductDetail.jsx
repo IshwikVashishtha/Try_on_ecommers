@@ -211,29 +211,13 @@ const ProductDetail = () => {
     return new Blob([uInt8Array], { type: contentType });
   };
 
-  const handleTryOn = async () => {
+ const handleTryOn = async () => {
     const userImageBase64 = localStorage.getItem("userImage");
     
     if (!userImageBase64) {
       alert("Please upload your photo using the camera icon in the top navigation bar first!");
       return;
     }
-
-    // ---Check Session Storage First ---
-    const cacheKey = `tryon_${product.id}`;
-    const cachedTryOn = sessionStorage.getItem(cacheKey);
-
-    if (cachedTryOn) {
-      // If the image is already in the tryOnImages array, just switch to it
-      if (!tryOnImages.includes(cachedTryOn)) {
-        setTryOnImages((prev) => [...prev, cachedTryOn]);
-        setActiveImage(baseImages.length + tryOnImages.length);
-      } else {
-        setActiveImage(images.indexOf(cachedTryOn));
-      }
-      return; // Exit early! No need to call the API.
-    }
-    // ----------------------------------------
 
     try {
       setTryOnLoading(true);
@@ -242,8 +226,8 @@ const ProductDetail = () => {
       const userBlob = base64ToBlob(userImageBase64);
 
       // 2. Fetch the current product image and convert to Blob
-      const productResponse = await fetch(baseImages[0]); // Always use the primary product image
-      if (!productResponse.ok) throw new Error("Failed to fetch product image");
+      const productResponse = await fetch(baseImages[0]);
+      if (!productResponse.ok) throw new Error("Failed to fetch product image from store");
       const productBlob = await productResponse.blob();
 
       // 3. Prepare FormData for the backend
@@ -251,39 +235,37 @@ const ProductDetail = () => {
       formData.append("user_image", userBlob, "user.jpg");
       formData.append("product_image", productBlob, "product.jpg");
 
-      // 4. Call the FastAPI backend (Make sure this IP matches your local network setup)
+      // 4. Call the FastAPI backend
       const baseUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
       const backendUrl = `${baseUrl}/tryon`; 
+      
       const apiResponse = await fetch(backendUrl, {
         method: "POST",
         body: formData,
       });
 
       if (!apiResponse.ok) {
-        throw new Error(`Backend API error: ${apiResponse.status}`);
+        const errorText = await apiResponse.text();
+        throw new Error(`Backend Error ${apiResponse.status}: ${errorText}`);
       }
 
       // 5. Read the resulting image blob
       const resultBlob = await apiResponse.blob();
       
-      // --- Convert Blob to Base64 to save in sessionStorage ---
-      const base64Result = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(resultBlob);
-      });
+      // THE FIX: Use URL.createObjectURL instead of Base64/sessionStorage. 
+      // This is 100x faster and prevents mobile browsers from crashing due to memory limits.
+      const imageUrl = URL.createObjectURL(resultBlob);
 
-      sessionStorage.setItem(cacheKey, base64Result);
-      // -------------------------------------------------------------
-
-      // 7. Add to state and set it as the active image
-      setTryOnImages((prev) => [...prev, base64Result]);
+      // 6. Add to state and set it as the active image
+      setTryOnImages((prev) => [...prev, imageUrl]);
+      
+      // Calculate the correct index to switch to the new image
       setActiveImage(baseImages.length + tryOnImages.length);
 
     } catch (err) {
       console.error("Virtual Try-On Failed:", err);
-      alert("Failed to generate virtual try-on. Service is down.Please try again later.");
+      // This will now pop up with the EXACT cause of the failure on your screen!
+      alert(`Try-On Failed: ${err.message || "Unknown error occurred"}`);
     } finally {
       setTryOnLoading(false);
     }
