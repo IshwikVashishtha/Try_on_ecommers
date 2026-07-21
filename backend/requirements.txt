@@ -1,8 +1,6 @@
-transformers==4.41.0
-torch
-# For image processing
-Pillow
-# For FastAPI
 fastapi
 uvicorn
 python-multipart
+gradio-client
+pillow
+python-dotenv
