@@ -114,6 +114,16 @@ async def try_on(
             
         raise HTTPException(status_code=500, detail=f"AI generation failed: {str(e)}")
 
+        
+@app.get("/health")
+async def health_check():
+    """
+    Health check endpoint for Render to monitor server uptime.
+    """
+    return {
+        "status": "healthy",
+        "ai_client_connected": client is not None
+    }
 if __name__ == "__main__":
     import uvicorn
     import os
