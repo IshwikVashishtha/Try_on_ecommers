@@ -211,13 +211,30 @@ const ProductDetail = () => {
     return new Blob([uInt8Array], { type: contentType });
   };
 
- const handleTryOn = async () => {
+const handleTryOn = async () => {
     const userImageBase64 = localStorage.getItem("userImage");
     
     if (!userImageBase64) {
       alert("Please upload your photo using the camera icon in the top navigation bar first!");
       return;
     }
+
+    // --- RESTORED: Check Session Storage First ---
+    const cacheKey = `tryon_${product.id}`;
+    const cachedTryOn = sessionStorage.getItem(cacheKey);
+
+    if (cachedTryOn) {
+      // If the image is not currently displayed, add it and switch to it
+      if (!tryOnImages.includes(cachedTryOn)) {
+        setTryOnImages((prev) => [...prev, cachedTryOn]);
+        setActiveImage(baseImages.length + tryOnImages.length);
+      } else {
+        // If it's already in the list, just switch focus to it
+        setActiveImage(images.indexOf(cachedTryOn));
+      }
+      return; // Exit early! Saves you an API call.
+    }
+    // ----------------------------------------
 
     try {
       setTryOnLoading(true);
@@ -252,20 +269,35 @@ const ProductDetail = () => {
       // 5. Read the resulting image blob
       const resultBlob = await apiResponse.blob();
       
-      // THE FIX: Use URL.createObjectURL instead of Base64/sessionStorage. 
-      // This is 100x faster and prevents mobile browsers from crashing due to memory limits.
-      const imageUrl = URL.createObjectURL(resultBlob);
-
-      // 6. Add to state and set it as the active image
-      setTryOnImages((prev) => [...prev, imageUrl]);
-      
-      // Calculate the correct index to switch to the new image
+      // 6. INSTANT DISPLAY: Use URL.createObjectURL for speed and zero crashing
+      const instantImageUrl = URL.createObjectURL(resultBlob);
+      setTryOnImages((prev) => [...prev, instantImageUrl]);
       setActiveImage(baseImages.length + tryOnImages.length);
+
+      // 7. BACKGROUND CACHE: Compress and save safely to sessionStorage
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        
+        // Compress as a JPEG to massively reduce file size for mobile limits
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.85);
+        
+        try {
+          sessionStorage.setItem(cacheKey, compressedBase64);
+        } catch (storageErr) {
+          // If the phone is completely out of memory, we silently catch the error
+          // The image will still show on screen, it just won't survive a page refresh
+          console.warn("Storage full: Could not cache image.", storageErr);
+        }
+      };
+      img.src = instantImageUrl;
 
     } catch (err) {
       console.error("Virtual Try-On Failed:", err);
-      
-      // The user sees a professional, generic message
       alert("We're sorry, the virtual try-on service is currently experiencing high demand. Please try again later.");
     } finally {
       setTryOnLoading(false);
